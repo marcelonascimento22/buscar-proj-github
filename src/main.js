@@ -2,17 +2,20 @@ import api from './api'
 class App{
     constructor(){
         //Lista de repositórios
-        this.repos = []
+        this.repos = JSON.parse(localStorage.getItem('repos')) || []
 
         //Form
         this.formulario = document.querySelector('form')
 
         //List
-        this.lista = document.querySelector('.list-group')
+        this.lista = document.querySelector('.list-group')      
 
 
         //Meétodo para registrar eventos do form
         this.registerEvents()
+
+        //renderiza a lista de repositórios
+        this.renderizarTela()
     }
 
     registerEvents(){
@@ -52,9 +55,17 @@ class App{
             //renderiza a lista de repositórios
             //console.log(this.repos);
             this.renderizarTela()
+
+            //Salvador dados
+            this.salvaDadosNoStorege()
         } catch(error){
             //LImpar Buscando
-            this.lista.removeChild(document.querySelector('.list-group-item-warning'))
+            let av = document.querySelector('list-group-item-warning')
+            if(av !== null){
+                this.lista.removeChild(av)
+            }
+            //this.lista.removeChild(document.querySelector('.list-group-item-warning'))
+            //Limpando error
             let err = document.querySelector('.list-group-item-danger')
             if(err !== null){
                 this.lista.removeChild(err)
@@ -86,10 +97,13 @@ class App{
         this.lista.innerHTML = ''
 
         //Pecorrer toda a lista
-        this.repos.forEach(repos => {
+        this.repos.forEach((repos, index) => {
             //Li
             let li = document.createElement('li')
             li.setAttribute('class', 'list-group-item list-group-item-action')
+            li.onclick = () => {
+                this.excluirRepos(index)
+            }
 
             //Img
             let img = document.createElement('img')
@@ -128,6 +142,24 @@ class App{
             //Adciona o foco no input
             this.formulario.querySelector('input[id=repositorio]').focus()
         })
+    }
+
+    salvaDadosNoStorege(){
+        localStorage.setItem('repos', JSON.stringify(this.repos))
+    }
+
+    excluirRepos(index){
+    //Remover a tarefa do array
+    console.log(index)
+    this.repos.splice(index, 1)
+    
+    //Reenderizar a tela
+    this.renderizarTela()
+
+    //Salvador dados
+    this.salvaDadosNoStorege()
+   // console.log(tar.textContent)
+
     }
 
 
