@@ -1,4 +1,4 @@
-
+import api from './api'
 class App{
     constructor(){
         //Lista de repositórios
@@ -20,22 +20,65 @@ class App{
 
     }
 
-    adicionarRepositorio(evento){
+    async adicionarRepositorio(evento){
         //
         // Evita que o formulario recarregue a pagina.
         evento.preventDefault() 
 
-        //adciona o repositorio na lista de repositórios
-        this.repos.push({
-            nome: 'Nerd Fonts',
-            descricao: "Iconic font aggregator, collection, and patcher",
-            avatar_url: "https://avatars.githubusercontent.com/u/8083459?s=48&v=4",
-            link: "thhps://github.com/ryanoasis/nerd-fonts",
-        })
+        //recupera o valor do input
+        let input = this.formulario.querySelector('input[id=repositorio]').value
 
-        //renderiza a lista de repositórios
-        //console.log(this.repos);
-        this.renderizarTela()
+        //Se vier vazio sai da aplicação
+        if(input.length === 0){ 
+            return
+        }
+
+        //Ativa o carregamento
+        this.apresentarBuscando()
+
+        try{
+            let response = await api.get(`/repos/${input}`)
+            //console.log(response)
+
+            let {name, description, html_url, owner: {avatar_url}} = response.data
+            //adciona o repositorio na lista de repositórios
+            this.repos.push({
+                nome: name,
+                descricao: description,
+                avatar_url,
+                link: html_url,
+            })
+
+            //renderiza a lista de repositórios
+            //console.log(this.repos);
+            this.renderizarTela()
+        } catch(error){
+            //LImpar Buscando
+            this.lista.removeChild(document.querySelector('.list-group-item-warning'))
+            let err = document.querySelector('.list-group-item-danger')
+            if(err !== null){
+                this.lista.removeChild(err)
+            }
+
+
+            //Li
+            let li = document.createElement('li')
+            li.setAttribute('class', 'list-group-item list-group-item-danger')
+            let txterror = document.createTextNode(`O repositório ${input} não existe.`)
+            li.appendChild(txterror)
+             this.lista.appendChild(li)
+        }
+    }
+
+    apresentarBuscando(){
+        //recupera o valor do input
+        let input = this.formulario.querySelector('input[id=repositorio]').value
+        //Li
+        let li = document.createElement('li')
+        li.setAttribute('class', 'list-group-item list-group-item-warning')
+        let txtBuscando = document.createTextNode(`Aguarde, buscando o repositório ${input}...`)
+        li.appendChild(txtBuscando)
+        this.lista.appendChild(li)
     }
 
     renderizarTela(){
