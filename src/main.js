@@ -60,11 +60,13 @@ class App{
             this.salvaDadosNoStorege()
         } catch(error){
             //LImpar Buscando
+            /*
             let av = document.querySelector('list-group-item-warning')
             if(av !== null){
                 this.lista.removeChild(av)
             }
-            //this.lista.removeChild(document.querySelector('.list-group-item-warning'))
+                */
+            this.lista.removeChild(document.querySelector('.list-group-item-warning'))
             //Limpando error
             let err = document.querySelector('.list-group-item-danger')
             if(err !== null){
@@ -150,7 +152,7 @@ class App{
 
     excluirRepos(index){
     //Remover a tarefa do array
-    console.log(index)
+    //console.log(index)
     this.repos.splice(index, 1)
     
     //Reenderizar a tela
